@@ -1,0 +1,799 @@
+/*By Reason*/
+002
+#include<iostream>
+003
+#include <iomanip>
+004
+#include<math.h>
+005
+#include<stdlib.h>
+006
+#include<time.h>
+007
+#include <conio.h>   //为了读取方向键
+008
+#include<windows.h>
+009
+ 
+010
+using namespace std;  
+011
+ 
+012
+//srand( (unsigned)time( NULL ) );  //随机数种子 不能用在这里
+013
+ 
+014
+int pane[4][4];    //棋盘
+015
+int N=1;   //2的n次方
+016
+ 
+017
+void showpane()    //显示棋盘
+018
+{
+019
+    cout<<setw(46)<<"X2048 by Reason"<<endl;
+020
+    cout<<setw(50)<<" |-----------------------|"<<endl;
+021
+ 
+022
+    for(int i=0;i<=3;i++)  
+023
+    {
+024
+        cout<<setw(24)<<"";
+025
+        for(int j=0;j<=3;j++)
+026
+        {
+027
+            //SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_RED); 
+028
+            if(pane[i][j]==0)
+029
+                cout<<setw(2)<<"|"<<setw(4)<<" ";
+030
+            else
+031
+                cout<<setw(2)<<"|"<<setw(4)<<pane[i][j];
+032
+         
+033
+            if(j==3)
+034
+                {
+035
+                    cout<<setw(2)<<"|"<<endl;
+036
+                    cout<<setw(50)<<" |-----------------------|"<<endl;
+037
+                }
+038
+        }
+039
+    }
+040
+}
+041
+ 
+042
+void newgame() //开始游戏
+043
+{
+044
+    N=1;
+045
+    for(int i=0;i<=3;i++)   //初始化棋盘
+046
+        for(int j=0;j<=3;j++)
+047
+            pane[i][j]=0;
+048
+ 
+049
+    srand( (unsigned)time( NULL ) );
+050
+    int m=rand()%4;
+051
+    int n=rand()%4;
+052
+    int p=rand()%4;
+053
+    int q=rand()%4;
+054
+ 
+055
+    pane[m][n]=pane[p][q]=2;
+056
+    showpane();
+057
+}
+058
+ 
+059
+int if2n(int x)   //判断x是否是2的n次方
+060
+{
+061
+    int flag=0;
+062
+    for(int n=1;n<=11;n++)
+063
+    {
+064
+        if(x==pow(2,n))
+065
+        {
+066
+            flag=1;
+067
+            if(n>N)
+068
+                N=n;
+069
+            return flag;
+070
+        }
+071
+    }
+072
+    return flag;
+073
+}
+074
+ 
+075
+int upmove()   //上移
+076
+{
+077
+    int flag=0;
+078
+    for(int j=0;j<=3;j++)
+079
+        for(int i=0;i<3;i++)
+080
+        {
+081
+            if(if2n(pane[i][j]+pane[i+1][j])==1)
+082
+            {
+083
+                pane[i][j]=pane[i][j]+pane[i+1][j];
+084
+                pane[i+1][j]=0;
+085
+                flag=1;
+086
+            }
+087
+        }
+088
+    return flag;
+089
+}
+090
+ 
+091
+int downmove() //下移
+092
+{
+093
+    int flag=0;
+094
+    for(int j=0;j<=3;j++)
+095
+        for(int i=3;i>0;i--)
+096
+        {
+097
+            if(if2n(pane[i][j]+pane[i-1][j])==1)
+098
+            {
+099
+                pane[i][j]=pane[i][j]+pane[i-1][j];
+100
+                pane[i-1][j]=0;
+101
+                flag=1;
+102
+            }
+103
+        }
+104
+    return flag;
+105
+}
+106
+ 
+107
+int leftmove() //左移
+108
+{
+109
+    int flag=0;
+110
+    for(int i=0;i<=3;i++)
+111
+        for(int j=0;j<3;j++)
+112
+        {
+113
+            if(if2n(pane[i][j]+pane[i][j+1])==1)
+114
+            {
+115
+                pane[i][j]=pane[i][j]+pane[i][j+1];
+116
+                pane[i][j+1]=0;
+117
+                flag=1;
+118
+            }
+119
+        }
+120
+    return flag;
+121
+}
+122
+ 
+123
+int rightmove()    //右移
+124
+{
+125
+    int flag=0;
+126
+    for(int i=0;i<=3;i++)
+127
+        for(int j=3;j>0;j--)
+128
+        {
+129
+            if(if2n(pane[i][j]+pane[i][j-1])==1)
+130
+            {
+131
+                pane[i][j]=pane[i][j]+pane[i][j-1];
+132
+                pane[i][j-1]=0;
+133
+                flag=1;
+134
+            }
+135
+        }
+136
+    return flag;
+137
+}
+138
+ 
+139
+int testup()   //能否上移测试
+140
+{
+141
+    int flag=0;
+142
+    for(int j=0;j<=3;j++)
+143
+        for(int i=0;i<3;i++)
+144
+        {
+145
+            if((if2n(pane[i][j]+pane[i+1][j])==1)&&pane[i+1][j])
+146
+            {
+147
+                flag=1;
+148
+            }
+149
+        }
+150
+    return flag;
+151
+}
+152
+ 
+153
+int testdown() //测试能否下移
+154
+{
+155
+    int flag=0;
+156
+    for(int j=0;j<=3;j++)
+157
+        for(int i=3;i>0;i--)
+158
+        {
+159
+            if((if2n(pane[i][j]+pane[i-1][j])==1)&&pane[i-1][j])
+160
+            {
+161
+                flag=1;
+162
+            }
+163
+        }
+164
+    return flag;
+165
+}
+166
+ 
+167
+int testleft() //测试能否左移
+168
+{
+169
+    int flag=0;
+170
+    for(int i=0;i<=3;i++)
+171
+        for(int j=0;j<3;j++)
+172
+        {
+173
+            if((if2n(pane[i][j]+pane[i][j+1])==1)&&pane[i][j+1])
+174
+            {
+175
+                flag=1;
+176
+            }
+177
+        }
+178
+    return flag;
+179
+}
+180
+ 
+181
+int testright()    //测试能否右移
+182
+{
+183
+    int flag=0;
+184
+    for(int i=0;i<=3;i++)
+185
+        for(int j=3;j>0;j--)
+186
+        {
+187
+            if((if2n(pane[i][j]+pane[i][j-1])==1)&&pane[i][j-1])
+188
+            {
+189
+                flag=1;
+190
+            }
+191
+        }
+192
+    return flag;
+193
+}
+194
+ 
+195
+ 
+196
+int panemax()  //棋盘最大数
+197
+{
+198
+    int max=pane[0][0];
+199
+    for(int i=0;i<=3;i++)
+200
+        for(int j=0;j<=3;j++)
+201
+            if(pane[i][j]>max)
+202
+                max=pane[i][j];
+203
+    return max;
+204
+}
+205
+ 
+206
+int ifwin()    //判断是否胜利
+207
+{
+208
+    int flag=0;
+209
+    if(panemax()==2048)
+210
+    {
+211
+        cout<<setw(45)<<"You Win!"<<endl;
+212
+        flag=1;
+213
+    }
+214
+    return flag;
+215
+}
+216
+ 
+217
+int ifGameOver()       //判断是否游戏结束
+218
+{
+219
+    int flag=0;
+220
+ 
+221
+    if(testup()+ testdown() + testleft() + testright() == 0)
+222
+    {
+223
+        cout<<setw(43)<<"Game Over!"<<endl;
+224
+        flag=1;
+225
+    }
+226
+    return flag;
+227
+}
+228
+ 
+229
+void addnewnumberup()  //上移后添加新数
+230
+{
+231
+    srand( (unsigned)time( NULL ) );
+232
+    int n;
+233
+    if(N==1)
+234
+        n=1;
+235
+    else
+236
+        n=(rand()%(N)+1);  
+237
+    int newnumber=pow(2,n);
+238
+    for(int i=3;i>=0;i--)
+239
+        for(int j=0;j<=3;j++)
+240
+            if(pane[i][j]==0)
+241
+            {
+242
+                pane[i][j]=newnumber;
+243
+                return;
+244
+            }
+245
+}
+246
+ 
+247
+void addnewnumberdown()    //下移后添加新数
+248
+{
+249
+    srand( (unsigned)time( NULL ) );
+250
+    int n;
+251
+    if(N==1)
+252
+        n=1;
+253
+    else
+254
+        n=(rand()%(N)+1);
+255
+    int newnumber=pow(2,n);
+256
+    for(int i=0;i<=3;i++)
+257
+        for(int j=0;j<=3;j++)
+258
+            if(pane[i][j]==0)
+259
+            {
+260
+                pane[i][j]=newnumber;
+261
+                return;
+262
+            }
+263
+}
+264
+ 
+265
+void addnewnumberleft()    //左移后添加新数
+266
+{
+267
+    srand( (unsigned)time( NULL ) );
+268
+    int n;
+269
+    if(N==1)
+270
+        n=1;
+271
+    else
+272
+        n=(rand()%(N)+1);  
+273
+    int newnumber=pow(2,n);
+274
+    for(int j=3;j>=0;j--)
+275
+        for(int i=0;i<=3;i++)
+276
+            if(pane[i][j]==0)
+277
+            {
+278
+                pane[i][j]=newnumber;
+279
+                return;
+280
+            }
+281
+}
+282
+ 
+283
+void addnewnumberright()   //右移后添加新数
+284
+{
+285
+    srand( (unsigned)time( NULL ) );
+286
+    int n;
+287
+    if(N==1)
+288
+        n=1;
+289
+    else
+290
+        n=(rand()%(N)+1);  
+291
+    int newnumber=pow(2,n);
+292
+    for(int j=0;j<=3;j++)
+293
+        for(int i=0;i<=3;i++)
+294
+            if(pane[i][j]==0)
+295
+            {
+296
+                pane[i][j]=newnumber;
+297
+                return;
+298
+            }
+299
+}
+300
+ 
+301
+int GetDirection() //读取方向
+302
+{
+303
+    int ret = 0;
+304
+  
+305
+    do 
+306
+    {
+307
+        int ch = _getch();
+308
+        if(isascii(ch))
+309
+            continue;
+310
+  
+311
+        ch = _getch();
+312
+        switch(ch)
+313
+        {
+314
+        case 72:   
+315
+            ret = 2; // top
+316
+            break;
+317
+        case 75:   
+318
+            ret = 1; // left 
+319
+            break;
+320
+        case 77:   
+321
+            ret = 3; // right
+322
+            break;
+323
+        case 80:   
+324
+            ret = 4; // down
+325
+            break;
+326
+        default:   
+327
+            break;
+328
+        }
+329
+    } while (ret == 0);
+330
+      
+331
+    return ret;
+332
+}
+333
+ 
+334
+int main() //主函数
+335
+{
+336
+    system("color f9");
+337
+    int makesure=1;
+338
+    while(makesure)
+339
+    {  
+340
+        system("cls");
+341
+        newgame();
+342
+        while(ifwin()+ifGameOver()==0)
+343
+        {
+344
+            int c=GetDirection();
+345
+            switch(c)
+346
+            {
+347
+            case 2:
+348
+                if(testup()==1)
+349
+                {   upmove();
+350
+                    addnewnumberup();
+351
+                    system("cls");
+352
+                    showpane();
+353
+                }
+354
+                break;
+355
+            case 4:
+356
+                if(testdown()==1)
+357
+                {
+358
+                    downmove();
+359
+                    addnewnumberdown();
+360
+                    system("cls");
+361
+                    showpane();
+362
+                }
+363
+                break;
+364
+            case 1:
+365
+                if(testleft()==1)
+366
+                {
+367
+                    leftmove();
+368
+                    addnewnumberleft();
+369
+                    system("cls");
+370
+                    showpane();
+371
+                }
+372
+                break;
+373
+            case 3:
+374
+                if(testright()==1)
+375
+                {
+376
+                    rightmove();
+377
+                    addnewnumberright();
+378
+                    system("cls");
+379
+                    showpane();
+380
+                }
+381
+                break;
+382
+            default:   
+383
+                break;
+384
+            }
+385
+        }
+386
+        cout<<setw(43)<<"你的最后成绩为："<<panemax()<<endl;
+387
+        cout<<setw(60)<<"若要重新开始游戏请输入1，若要结束请输入0。"<<endl;
+388
+        cin>>makesure;
+389
+        while(makesure!=1&&makesure!=0)
+390
+        {
+391
+            cout<<"输入不正确，请重新输入!"<<endl;
+392
+            cin>>makesure;
+393
+        }
+394
+ 
+395
+ 
+396
+    }
+397
+        cout<<"再见！"<<endl;
+398
+        system("pause");
+399
+        return 0;
+400
+}
